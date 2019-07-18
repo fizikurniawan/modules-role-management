@@ -7,18 +7,22 @@
         This view is loaded from module: {!! config('role.name') !!}
     </p>
 
-    <table>
+    <table border="1px">
         <thead>
             <th>
-                <td>User</td>
                 <td>Role</td>
+                <td>Permission</td>
             </th>
         </thead>
         <tbody>
             @foreach($role as $r)
             <th>
-                <td>{{ $r->id }}</td>
-                <td>{{ $r->roles }}</td>
+                <td>{{ $r->name }}</td>
+                <td>
+                    @foreach($r->permissions as $p)
+                        {{ $p->permission }} ,
+                    @endforeach
+                </td>
             </th>
             @endforeach
         </tbody>

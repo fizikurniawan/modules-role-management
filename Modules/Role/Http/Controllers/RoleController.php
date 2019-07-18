@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Modules\Role\Entities\Role;
+use Modules\Role\Entities\RolePermission;
 
 class RoleController extends Controller
 {
@@ -16,7 +17,7 @@ class RoleController extends Controller
     
     public function __construct()
     {
-        $this->middleware('\Modules\Role\Http\Middleware\RoleMiddleware:admin')->only(['create', 'store']);
+        $this->middleware('\Modules\Role\Http\Middleware\RoleMiddleware')->only(['create', 'store', 'edit', 'destroy']);
     }
 
     public function index()
@@ -31,7 +32,8 @@ class RoleController extends Controller
      */
     public function create()
     {
-        return view('role::create');
+        $role = Role::all();
+        return view('role::create')->with('role', $role);
     }
 
     /**
@@ -42,12 +44,17 @@ class RoleController extends Controller
     public function store(Request $request)
     {
         //
-        $role = Role::firstOrNew([
-            'user_id' => $request->input('user_id'),
-        ]);
+        $permissions = $request->input('permission');
+        $role_id = $request->input('role_id');
+        foreach($permissions as $p){
+            $role = RolePermission::firstOrNew([
+                'role_id' => $role_id,
+                'permission' => $p
+            ]);
 
-        $role->roles = $request->input('role');
-        $role->save();
+            $role->save();
+        }
+
 
         return redirect()->route('role-index');
     }

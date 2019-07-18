@@ -6,6 +6,9 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
+use Modules\Role\Entities\Role;
+use Modules\Role\Entities\RolePermission;
+
 class User extends Authenticatable
 {
     use Notifiable;
@@ -36,4 +39,26 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function role(){
+        return $this->belongsTo('\Modules\Role\Entities\Role');
+    }
+
+    public function canPermission($role){
+        $permissions = RolePermission::where('role_id', $this->role_id)->get();
+        
+        foreach($permissions as $p)
+        {
+            if($p->permission == $role)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public function getPermissions(){
+        $permissions = RolePermission::where('role_id', $this->role_id)->get();
+        return $permissions;
+    }
 }

@@ -10,11 +10,10 @@ class Role extends Model
 
     public function user()
     {
-        return $this->belongsTo('App\User');
+        return $this->belongsToMany('App\User');
     }
 
-    public static function checkRole($role){
-        $is_role = self::where(['user_id'=> \Auth::user()->id,'roles'=>$role])->first();
-        return $is_role? true : false;
+    public function permissions(){
+        return $this->hasMany('\Modules\Role\Entities\RolePermission');
     }
 }
